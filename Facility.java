@@ -1,15 +1,15 @@
 public class Facility {
-    public String id;
-    public String facilityName;
-    public String facilityType;
-    public String address;
-    public String postCode;
-    public String phoneNumber;
-    public String email;
-    public String openingHours;
-    public String managerName;
-    public int capacity;
-    public String specialtiesOffered;
+    private String id;
+    private String facilityName;
+    private String facilityType;
+    private String address;
+    private String postCode;
+    private String phoneNumber;
+    private String email;
+    private String openingHours;
+    private String managerName;
+    private int capacity;
+    private String specialtiesOffered;
 
     public Facility(String id, String facilityName, String facilityType, String address, String postCode, String phoneNumber, String email, String openingHours, String managerName, int capacity, String specialtiesOffered) {
         this.id = id;

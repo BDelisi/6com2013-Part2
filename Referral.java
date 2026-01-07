@@ -1,20 +1,20 @@
 public class Referral {
-    public  String id;
-    public  String patientId;
-    public String referringClinicianId;
-    public String referredToClinicianId;
-    public String referringFacilityId;
-    public String referredToFacilityId;
-    public String referralDate;
-    public String urgencyLevel;
-    public String referralReason;
-    public String clinicianSummary;
-    public String requestedInvestigations;
-    public String status;
-    public String appointmentId;
-    public String notes;
-    public String createdDate;
-    public String lastUpdated;
+    private  String id;
+    private  String patientId;
+    private String referringClinicianId;
+    private String referredToClinicianId;
+    private String referringFacilityId;
+    private String referredToFacilityId;
+    private String referralDate;
+    private String urgencyLevel;
+    private String referralReason;
+    private String clinicianSummary;
+    private String requestedInvestigations;
+    private String status;
+    private String appointmentId;
+    private String notes;
+    private String createdDate;
+    private String lastUpdated;
 
     public Referral(String id, String patientId, String referringClinicianId, String referredToClinicianId, String referringFacilityId, String referredToFacilityId, String referralDate, String urgencyLevel, String referralReason, String clinicianSummary, String requestedInvestigations, String status, String appointmentId, String notes, String createdDate, String lastUpdated) {
         this.id = id;

@@ -1,19 +1,19 @@
 public class Prescription {
-    public String id;
-    public String patientId;
-    public String clinicId;
-    public String appointmentId;
-    public String prescriptionDate;
-    public String medicationName;
-    public String dosage;
-    public String frequency;
-    public int durationDays;
-    public String quantity;
-    public String instructions;
-    public String pharmacyName;
-    public String status;
-    public String issueDate;
-    public String collection;
+    private String id;
+    private String patientId;
+    private String clinicId;
+    private String appointmentId;
+    private String prescriptionDate;
+    private String medicationName;
+    private String dosage;
+    private String frequency;
+    private int durationDays;
+    private String quantity;
+    private String instructions;
+    private String pharmacyName;
+    private String status;
+    private String issueDate;
+    private String collection;
 
     public Prescription(String id, String patientId, String clinicId, String appointmentId, String prescriptionDate, String medicationName, String dosage, String frequency, int durationDays,  String quantity, String instructions, String pharmacyName, String status, String issueDate, String collection) {
         this.id = id;

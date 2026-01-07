@@ -1,11 +1,11 @@
 public class Staff extends Person {
-    public String role;
-    public String department;
-    public String facilityId;
-    public String employmentStatus;
-    public String startDate;
-    public String lineManager;
-    public String accessLevel;
+    private String role;
+    private String department;
+    private String facilityId;
+    private String employmentStatus;
+    private String startDate;
+    private String lineManager;
+    private String accessLevel;
 
     public Staff(String id, String firstName, String lastName, String role, String department, String facilityId, String phoneNumber, String email, String employmentStatus, String startDate, String lineManager, String accessLevel) {
         super(id, firstName, lastName, phoneNumber, email);
