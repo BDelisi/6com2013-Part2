@@ -1,3 +1,5 @@
+package src;
+
 public class Patient extends Person {
     private String dateOfBirth;
     private String nhsNumber;

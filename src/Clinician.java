@@ -1,3 +1,5 @@
+package src;
+
 public class Clinician extends Person {
     private String title;
     private String specialty;

@@ -1,3 +1,5 @@
+package src;
+
 public class Facility {
     private String id;
     private String facilityName;
