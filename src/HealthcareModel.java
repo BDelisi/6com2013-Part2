@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class HealthcareModel {
     private HashMap<String, Facility> facilities;
@@ -59,7 +61,7 @@ public class HealthcareModel {
         }
     }
 
-    private void saveFacilities() {
+    public void saveFacilities() {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<Facility> facilitiesList = new ArrayList<>(facilities.values());
         lines.add("facility_id,facility_name,facility_type,address,postcode,phone_number,email,opening_hours,manager_name,capacity,specialities_offered");
@@ -83,7 +85,18 @@ public class HealthcareModel {
     }
 
     public String generateFacilityId() {
-        return "S" + facilities.size();
+        Set<Integer> usedNumbers = new HashSet<>();
+        for (String id : facilities.keySet()) {
+            int number = Integer.parseInt(id.substring(1));
+            usedNumbers.add(number);
+        }
+
+        int newIdNumber = 1;
+        while (usedNumbers.contains(newIdNumber)) {
+            newIdNumber++;
+        }
+
+        return String.format("H%03d", newIdNumber);
     }
 
 
@@ -96,7 +109,7 @@ public class HealthcareModel {
         }
     }
 
-    private void saveClinicians() {
+    public void saveClinicians() {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<Clinician> cliniciansList = new ArrayList<>(clinicians.values());
         lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id,workplace_type,employment_status,start_date");
@@ -120,7 +133,18 @@ public class HealthcareModel {
     }
 
     public String generateClinicianId() {
-        return "S" + clinicians.size();
+        Set<Integer> usedNumbers = new HashSet<>();
+        for (String id : clinicians.keySet()) {
+            int number = Integer.parseInt(id.substring(1));
+            usedNumbers.add(number);
+        }
+
+        int newIdNumber = 1;
+        while (usedNumbers.contains(newIdNumber)) {
+            newIdNumber++;
+        }
+
+        return String.format("C%03d", newIdNumber);
     }
 
 
@@ -133,10 +157,10 @@ public class HealthcareModel {
         }
     }
 
-    private void savePatients() {
+    public void savePatients() {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<Patient> patientsList = new ArrayList<>(patients.values());
-        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id,workplace_type,employment_status,start_date");
+        lines.add("patient_id,first_name,last_name,date_of_birth,nhs_number,gender,phone_number,email,address,postcode,emergency_contact_name,emergency_contact_phone,registration_date,gp_surgery_id");
         for (int i = 0; i < patientsList.size(); i++) {
             lines.add(patientsList.get(i).toString());
         }
@@ -157,7 +181,18 @@ public class HealthcareModel {
     }
 
     public String generatePatientId() {
-        return "S" + patients.size();
+        Set<Integer> usedNumbers = new HashSet<>();
+        for (String id : patients.keySet()) {
+            int number = Integer.parseInt(id.substring(1));
+            usedNumbers.add(number);
+        }
+
+        int newIdNumber = 1;
+        while (usedNumbers.contains(newIdNumber)) {
+            newIdNumber++;
+        }
+
+        return String.format("P%03d", newIdNumber);
     }
 
 
@@ -170,10 +205,10 @@ public class HealthcareModel {
         }
     }
 
-    private void saveStaff() {
+    public void saveStaff() {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<Staff> staffList = new ArrayList<>(staffMap.values());
-        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id,workplace_type,employment_status,start_date");
+        lines.add("staff_id,first_name,last_name,role,department,facility_id,phone_number,email,employment_status,start_date,line_manager,access_level");
         for (int i = 0; i < staffList.size(); i++) {
             lines.add(staffList.get(i).toString());
         }
@@ -194,7 +229,18 @@ public class HealthcareModel {
     }
 
     public String generateStaffId() {
-        return "S" + staffMap.size();
+        Set<Integer> usedNumbers = new HashSet<>();
+        for (String id : staffMap.keySet()) {
+            int number = Integer.parseInt(id.substring(2));
+            usedNumbers.add(number);
+        }
+
+        int newIdNumber = 1;
+        while (usedNumbers.contains(newIdNumber)) {
+            newIdNumber++;
+        }
+
+        return String.format("ST%03d", newIdNumber);
     }
 
 
@@ -207,10 +253,10 @@ public class HealthcareModel {
         }
     }
 
-    private void saveAppointments() {
+    public void saveAppointments() {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<Appointment> appointmentList = new ArrayList<>(appointments.values());
-        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id,workplace_type,employment_status,start_date");
+        lines.add("appointment_id,patient_id,clinician_id,facility_id,appointment_date,appointment_time,duration_minutes,appointment_type,status,reason_for_visit,notes,created_date,last_modified");
         for (int i = 0; i < appointmentList.size(); i++) {
             lines.add(appointmentList.get(i).toString());
         }
@@ -231,7 +277,18 @@ public class HealthcareModel {
     }
 
     public String generateAppointmentId() {
-        return "S" + appointments.size();
+        Set<Integer> usedNumbers = new HashSet<>();
+        for (String id : appointments.keySet()) {
+            int number = Integer.parseInt(id.substring(1));
+            usedNumbers.add(number);
+        }
+
+        int newIdNumber = 1;
+        while (usedNumbers.contains(newIdNumber)) {
+            newIdNumber++;
+        }
+
+        return String.format("A%03d", newIdNumber);
     }
 
 
@@ -244,10 +301,10 @@ public class HealthcareModel {
         }
     }
 
-    private void saveReferrals() {
+    public void saveReferrals() {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<Referral> referralList = new ArrayList<>(referrals.values());
-        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id,workplace_type,employment_status,start_date");
+        lines.add("referral_id,patient_id,referring_clinician_id,referred_to_clinician_id,referring_facility_id,referred_to_facility_id,referral_date,urgency_level,referral_reason,clinical_summary,requested_investigations,status,appointment_id,notes,created_date,last_updated");
         for (int i = 0; i < referralList.size(); i++) {
             lines.add(referralList.get(i).toString());
         }
@@ -281,10 +338,10 @@ public class HealthcareModel {
         }
     }
 
-    private void savePrescriptions() {
+    public void savePrescriptions() {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<Prescription> prescriptionList = new ArrayList<>(prescriptions.values());
-        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id,workplace_type,employment_status,start_date");
+        lines.add("prescription_id,patient_id,clinician_id,appointment_id,prescription_date,medication_name,dosage,frequency,duration_days,quantity,instructions,pharmacy_name,status,issue_date,collection_date");
         for (int i = 0; i < prescriptionList.size(); i++) {
             lines.add(prescriptionList.get(i).toString());
         }
@@ -305,6 +362,17 @@ public class HealthcareModel {
     }
 
     public String generatePrescriptionId() {
-        return "S" + prescriptions.size();
+        Set<Integer> usedNumbers = new HashSet<>();
+        for (String id : prescriptions.keySet()) {
+            int number = Integer.parseInt(id.substring(1));
+            usedNumbers.add(number);
+        }
+
+        int newIdNumber = 1;
+        while (usedNumbers.contains(newIdNumber)) {
+            newIdNumber++;
+        }
+
+        return String.format("RX%03d", newIdNumber);
     }
 }

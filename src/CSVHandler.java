@@ -5,6 +5,7 @@ public class CSVHandler {
 
     public static void writeLines(String filename, ArrayList<String> lines) {
         BufferedWriter writer = null;
+        createFileIfNotExists(filename);
         try {
             writer = new BufferedWriter(new FileWriter(filename));
             for (int i = 0; i < lines.size(); i++) {
@@ -28,6 +29,7 @@ public class CSVHandler {
     public static ArrayList<String> readLines(String filename) {
         ArrayList<String> lines = new ArrayList<String>();
         BufferedReader reader = null;
+        createFileIfNotExists(filename);
         try {
             File file = new File(filename);
             if (!file.exists()) {

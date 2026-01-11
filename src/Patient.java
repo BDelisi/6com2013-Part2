@@ -1,7 +1,7 @@
 public class Patient extends Person {
     private String dateOfBirth;
     private String nhsNumber;
-    private char gender;
+    private String gender;
     private String address;
     private String postCode;
     private String emergencyContactName;
@@ -9,7 +9,7 @@ public class Patient extends Person {
     private String registrationDate;
     private String gpSurgeryId;
 
-    public Patient(String id, String firstName, String lastName, String dateOfBirth, String nhsNumber, char gender, String phoneNumber, String email, String address, String postCode, String emergencyContactName, String emergencyContactPhone, String registrationDate, String gpSurgeryId) {
+    public Patient(String id, String firstName, String lastName, String dateOfBirth, String nhsNumber, String gender, String phoneNumber, String email, String address, String postCode, String emergencyContactName, String emergencyContactPhone, String registrationDate, String gpSurgeryId) {
         super(id, firstName, lastName, phoneNumber, email);
         this.dateOfBirth = dateOfBirth;
         this.nhsNumber = nhsNumber;
@@ -38,11 +38,11 @@ public class Patient extends Person {
         this.nhsNumber = nhsNumber;
     }
 
-    public char getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(char gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
@@ -96,7 +96,7 @@ public class Patient extends Person {
 
     public static Patient fromCSV(String csv) {
         String[] parts = csv.split(",");
-        return new Patient(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5].charAt(0), parts[6], parts[7], parts[8] + "," + parts[9], parts[10], parts[11], parts[12], parts[13], parts[14]);
+        return new Patient(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7], parts[8] + "," + parts[9], parts[10], parts[11], parts[12], parts[13], parts[14]);
     }
 
     @Override
