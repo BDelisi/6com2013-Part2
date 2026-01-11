@@ -1,5 +1,3 @@
-package src;
-
 public class Person {
     protected String id;
     protected String firstName;

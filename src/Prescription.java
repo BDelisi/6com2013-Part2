@@ -1,5 +1,3 @@
-package src;
-
 public class Prescription {
     private String id;
     private String patientId;

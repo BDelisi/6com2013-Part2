@@ -1,5 +1,3 @@
-package src;
-
 public class Facility {
     private String id;
     private String facilityName;
@@ -117,11 +115,11 @@ public class Facility {
 
     public static Facility fromCSV(String csv) {
         String[] parts = csv.split(",");
-        return new Facility(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7], parts[8], Integer.parseInt(parts[9]), parts[10]);
+        return new Facility(parts[0], parts[1], parts[2], parts[3] +"," + parts[4], parts[5], parts[6], parts[7] + "," + parts[8], parts[9], parts[10], Integer.parseInt(parts[11]), parts[12]);
     }
 
     @Override
     public String toString() {
-        return id + "," + facilityName + "," + facilityType + "," + address + "," + postCode + "," + phoneNumber + "," + email + "," +openingHours + "," + managerName + "," + capacity + "," + specialtiesOffered;
+        return id + "," + facilityName + "," + facilityType + "," + address + "," + postCode + "," + phoneNumber + "," + email + "," + openingHours + "," + managerName + "," + capacity + "," + specialtiesOffered;
     }
 }

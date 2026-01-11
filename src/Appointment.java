@@ -1,30 +1,30 @@
-package src;
-
 public class Appointment {
     private String id;
     private String patientId;
     private String clinicianId;
-    private String facultyId;
+    private String facilityId;
     private String appointmentDate;
     private String appointmentTime;
     private int durationMinutes;
     private String appointmentType;
     private String status;
     private String reasonForVisit;
+    private String notes;
     private String createdDate;
     private String lastModified;
 
-    public Appointment(String appointmentId, String patientId, String clinicianId, String facultyId, String appointmentDate, String appointmentTime, int durationMinutes, String appointmentType, String status, String reasonForVisit, String createdDate, String lastModified) {
+    public Appointment(String appointmentId, String patientId, String clinicianId, String facilityId, String appointmentDate, String appointmentTime, int durationMinutes, String appointmentType, String status, String reasonForVisit, String notes, String createdDate, String lastModified) {
         this.id = appointmentId;
         this.patientId = patientId;
         this.clinicianId = clinicianId;
-        this.facultyId = facultyId;
+        this.facilityId = facilityId;
         this.appointmentDate = appointmentDate;
         this.appointmentTime = appointmentTime;
         this.durationMinutes = durationMinutes;
         this.appointmentType = appointmentType;
         this.status = status;
         this.reasonForVisit = reasonForVisit;
+        this.notes = notes;
         this.createdDate = createdDate;
         this.lastModified = lastModified;
     }
@@ -53,12 +53,12 @@ public class Appointment {
         this.clinicianId = clinicianId;
     }
 
-    public String getFacultyId() {
-        return facultyId;
+    public String getFacilityId() {
+        return facilityId;
     }
 
-    public void setFacultyId(String facultyId) {
-        this.facultyId = facultyId;
+    public void setFacilityId(String facilityId) {
+        this.facilityId = facilityId;
     }
 
     public String getAppointmentDate() {
@@ -109,6 +109,17 @@ public class Appointment {
         this.reasonForVisit = reasonForVisit;
     }
 
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+
+
     public String getCreatedDate() {
         return createdDate;
     }
@@ -127,12 +138,12 @@ public class Appointment {
 
     public static Appointment fromCSV(String csv) {
         String[] parts = csv.split(",");
-        return new Appointment(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], Integer.parseInt(parts[6]), parts[7], parts[8], parts[9], parts[10], parts[11]);
+        return new Appointment(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], Integer.parseInt(parts[6]), parts[7], parts[8], parts[9], parts[10], parts[11], parts[12]);
     }
 
     @Override
     public String toString() {
-        return id + "," + patientId + "," + clinicianId + "," + facultyId + "," + appointmentDate + "," + appointmentTime + "," + durationMinutes + "," + appointmentType + "," + status + "," + reasonForVisit + "," + createdDate + "," + lastModified;
+        return id + "," + patientId + "," + clinicianId + "," + facilityId + "," + appointmentDate + "," + appointmentTime + "," + durationMinutes + "," + appointmentType + "," + status + "," + reasonForVisit + "," + notes + "," + createdDate + "," + lastModified;
     }
 
 

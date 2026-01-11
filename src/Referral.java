@@ -1,5 +1,3 @@
-package src;
-
 public class Referral {
     private  String id;
     private  String patientId;
