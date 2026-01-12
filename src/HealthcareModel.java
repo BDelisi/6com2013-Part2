@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +21,10 @@ public class HealthcareModel {
     private static final String REFERRALS_FILE = "src/referrals.csv";
     private static final String PRESCRIPTIONS_FILE = "src/prescriptions.csv";
 
+    private LocalDate date;
+
     public HealthcareModel() {
+        this.date = LocalDate.now();
         facilities = new HashMap<String, Facility>();
         clinicians = new HashMap<String, Clinician>();
         patients = new HashMap<String, Patient>();
@@ -50,6 +54,10 @@ public class HealthcareModel {
         saveAppointments();
         saveReferrals();
         savePrescriptions();
+    }
+
+    public String getDate(){
+        return date.toString();
     }
 
     //=============== Facilities Management ============================

@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
@@ -7,7 +9,7 @@ import java.time.LocalDate;
 
 public class HealthcareView extends JFrame {
 
-    private HealthcareModel model;
+    private HealthcareController controller;
 
     private JTabbedPane tabbedPane;
     private DefaultTableModel facilitiesTable;
@@ -18,11 +20,19 @@ public class HealthcareView extends JFrame {
     private DefaultTableModel prescriptionsTable;
     private DefaultTableModel referralsTable;
 
-    private LocalDate date;
+    private TableUpdateListener facilitiesPanelListener;
+    private TableUpdateListener cliniciansPanelListener;
+    private TableUpdateListener patientsPanelListener;
+    private TableUpdateListener staffPanelListener;
+    private TableUpdateListener appointmentsPanelListener;
+    private TableUpdateListener prescriptionsPanelListener;
+    private TableUpdateListener referralsPanelListener;
+    private CreateButtonListener createButtonListener;
+    private DeleteButtonListener deleteButtonListener;
 
-    public HealthcareView(HealthcareModel model) {
-        this.model = model;
-        this.date = LocalDate.now();
+
+    public HealthcareView() {
+
 
         setTitle("Healthcare Management System");
         setSize(900, 600);
@@ -30,22 +40,21 @@ public class HealthcareView extends JFrame {
         setLocationRelativeTo(null);
 
         tabbedPane = new JTabbedPane();
-
-        tabbedPane.addTab("Facility", createFacilitiesPanel());
-        tabbedPane.addTab("Clinicians", createCliniciansPanel());
-        tabbedPane.addTab("Patients", createPatientsPanel());
-        tabbedPane.addTab("Staff", createStaffPanel());
-        tabbedPane.addTab("Appointments", createAppointmentsPanel());
-        tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());
-        tabbedPane.addTab("Referrals", createReferralsPanel());
-
         add(tabbedPane);
     }
 
-    // ================= Facilities ===============
-    private JPanel createFacilitiesPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    public void setController(HealthcareController controller) {
+        this.controller = controller;
+    }
 
+    // ================= Facilities ===============
+    public void createFacilitiesPanel(ArrayList<Facility> facilities) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Facilities");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         String[] columns = {"facility_id","facility_name","facility_type","address","postcode","phone_number","email","opening_hours","manager_name",
                             "capacity","specialities_offered"};
@@ -56,51 +65,25 @@ public class HealthcareView extends JFrame {
             }
         };
 
-        refreshFacilitesTable();
+        refreshFacilitiesTable(facilities);
         JTable table = new JTable(facilitiesTable);
 
-        facilitiesTable.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int col = e.getColumn();
-            if (row < 0 || col < 0) return;
-
-            Facility f = model.getFacilityById(facilitiesTable.getValueAt(row, 0).toString()); // get original object
-            Object newValue = facilitiesTable.getValueAt(row, col);
-
-            switch (col) {
-                case 1: f.setFacilityName(newValue.toString()); break;
-                case 2: f.setFacilityType(newValue.toString()); break;
-                case 3: f.setAddress(newValue.toString()); break;
-                case 4: f.setPostCode(newValue.toString()); break;
-                case 5: f.setPhoneNumber(newValue.toString()); break;
-                case 6: f.setEmail(newValue.toString()); break;
-                case 7: f.setOpeningHours(newValue.toString()); break;
-                case 8: f.setManagerName(newValue.toString()); break;
-                case 9: break;
-                case 10: f.setSpecialtiesOffered(newValue.toString()); break;
+        facilitiesTable.addTableModelListener( e ->{
+            if (facilitiesPanelListener != null) {
+                facilitiesPanelListener.onTableChange(e, facilitiesTable);
             }
-
-            if (col == 9) { // assume capacity column index
-                try {
-                    f.setCapacity(Integer.parseInt(newValue.toString()));
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Capacity must be a number");
-                    facilitiesTable.setValueAt(0, row, 9);
-                }
-            }
-
-            model.saveFacilities();
         });
+
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         panel.add(createButtonPanel("Facility", facilitiesTable, table), BorderLayout.SOUTH);
-        return panel;
+        tabbedPane.addTab("Facility", panel);
     }
 
-    public void refreshFacilitesTable(){
+    public void refreshFacilitiesTable(ArrayList<Facility> facilities){
         facilitiesTable.setRowCount(0);
-        ArrayList<Facility> facilityList = new ArrayList<>(model.getAllFacilities());
+        ArrayList<Facility> facilityList = new ArrayList<>(facilities);
         facilityList.sort(Comparator.comparingInt(r -> Integer.parseInt(r.getId().substring(1))));
 
         for (Facility f : facilityList) {
@@ -121,8 +104,13 @@ public class HealthcareView extends JFrame {
     }
 
     // ================= Clinicians =================
-    private JPanel createCliniciansPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    public void createCliniciansPanel(ArrayList<Clinician> clinician) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Clinicians");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         String[] columns = {"clinician_id","first_name","last_name","title","speciality","gmc_number","phone_number","email","workplace_id",
                             "workplace_type","employment_status","start_date"};
@@ -133,44 +121,25 @@ public class HealthcareView extends JFrame {
             }
         };
 
-        refreshClinicianTable();
+        refreshClinicianTable(clinician);
 
         JTable table = new JTable(cliniciansTable);
 
         cliniciansTable.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int col = e.getColumn();
-            if (row < 0 || col < 0) return;
-
-            Clinician c = model.getClinicianById(cliniciansTable.getValueAt(row, 0).toString()); // get original object
-            Object newValue = cliniciansTable.getValueAt(row, col);
-
-            switch (col) {
-                case 1: c.setFirstName(newValue.toString()); break;
-                case 2: c.setLastName(newValue.toString()); break;
-                case 3: c.setTitle(newValue.toString()); break;
-                case 4: c.setSpecialty(newValue.toString()); break;
-                case 5: c.setGmcNumber(newValue.toString()); break;
-                case 6: c.setPhoneNumber(newValue.toString()); break;
-                case 7: c.setEmail(newValue.toString()); break;
-                case 8: c.setWorkPlaceId(newValue.toString()); break;
-                case 9: c.setWorkPlaceType(newValue.toString()); break;
-                case 10: c.setEmploymentStatus(newValue.toString()); break;
-                case 11: c.setStartDate(newValue.toString()); break;
+            if(cliniciansPanelListener != null) {
+                cliniciansPanelListener.onTableChange(e, cliniciansTable);
             }
-
-            model.saveClinicians();
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         panel.add(createButtonPanel("Clinician", cliniciansTable, table), BorderLayout.SOUTH);
-        return panel;
+        tabbedPane.addTab("Clinicians", panel);
     }
 
-    public void refreshClinicianTable(){
+    public void refreshClinicianTable(ArrayList<Clinician> clinicians){
         cliniciansTable.setRowCount(0);
-        ArrayList<Clinician> clinicianList = new ArrayList<>(model.getAllClinicians());
+        ArrayList<Clinician> clinicianList = new ArrayList<>(clinicians);
         clinicianList.sort(Comparator.comparingInt(r -> Integer.parseInt(r.getId().substring(1))));
 
         for (Clinician c : clinicianList) {
@@ -192,8 +161,13 @@ public class HealthcareView extends JFrame {
     }
 
     // ================= Patients =================
-    private JPanel createPatientsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    public void createPatientsPanel(ArrayList<Patient> patients) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Patients");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         String[] columns = {"patient_id","first_name","last_name","date_of_birth","nhs_number","gender","phone_number","email","address",
                             "postcode","emergency_contact_name","emergency_contact_phone","registration_date","gp_surgery_id"};
@@ -204,46 +178,25 @@ public class HealthcareView extends JFrame {
             }
         };
 
-        refreshPatientsTable();
+        refreshPatientsTable(patients);
 
         JTable table = new JTable(patientsTable);
 
         patientsTable.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int col = e.getColumn();
-            if (row < 0 || col < 0) return;
-
-            Patient p = model.getPatientById(patientsTable.getValueAt(row, 0).toString()); // get original object
-            Object newValue = patientsTable.getValueAt(row, col);
-
-            switch (col) {
-                case 1: p.setFirstName(newValue.toString()); break;
-                case 2: p.setLastName(newValue.toString()); break;
-                case 3: p.setDateOfBirth(newValue.toString()); break;
-                case 4: p.setNhsNumber(newValue.toString()); break;
-                case 5: p.setGender(newValue.toString()); break;
-                case 6: p.setPhoneNumber(newValue.toString()); break;
-                case 7: p.setEmail(newValue.toString()); break;
-                case 8: p.setAddress(newValue.toString()); break;
-                case 9: p.setPostCode(newValue.toString()); break;
-                case 10: p.setEmergencyContactName(newValue.toString()); break;
-                case 11: p.setEmergencyContactPhone(newValue.toString()); break;
-                case 12: p.setRegistrationDate(newValue.toString()); break;
-                case 13: p.setGpSurgeryId(newValue.toString()); break;
+            if(patientsPanelListener != null) {
+                patientsPanelListener.onTableChange(e, patientsTable);
             }
-
-            model.savePatients();
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         panel.add(createButtonPanel("Patient", patientsTable, table), BorderLayout.SOUTH);
-        return panel;
+        tabbedPane.addTab("Patients", panel);
     }
 
-    public void refreshPatientsTable(){
+    public void refreshPatientsTable(ArrayList<Patient> patients){
         patientsTable.setRowCount(0);
-        ArrayList<Patient> patientList = new ArrayList<>(model.getAllPatients());
+        ArrayList<Patient> patientList = new ArrayList<>(patients);
         patientList.sort(Comparator.comparingInt(r -> Integer.parseInt(r.getId().substring(1))));
 
         for (Patient p : patientList) {
@@ -267,8 +220,13 @@ public class HealthcareView extends JFrame {
     }
 
     // =================== Staff ======================
-    private JPanel createStaffPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    public void createStaffPanel(ArrayList<Staff> staff) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Staff");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         String[] columns = {"staff_id","first_name","last_name","role","department","facility_id","phone_number","email","employment_status",
                             "start_date","line_manager","access_level"};
@@ -279,44 +237,25 @@ public class HealthcareView extends JFrame {
             }
         };
 
-        refreshStaffTable();
+        refreshStaffTable(staff);
 
         JTable table = new JTable(staffTable);
 
         staffTable.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int col = e.getColumn();
-            if (row < 0 || col < 0) return;
-
-            Staff s = model.getStaffById(staffTable.getValueAt(row, 0).toString()); // get original object
-            Object newValue = staffTable.getValueAt(row, col);
-
-            switch (col) {
-                case 1: s.setFirstName(newValue.toString()); break;
-                case 2: s.setLastName(newValue.toString()); break;
-                case 3: s.setRole(newValue.toString()); break;
-                case 4: s.setDepartment(newValue.toString()); break;
-                case 5: s.setFacilityId(newValue.toString()); break;
-                case 6: s.setPhoneNumber(newValue.toString()); break;
-                case 7: s.setEmail(newValue.toString()); break;
-                case 8: s.setEmploymentStatus(newValue.toString()); break;
-                case 9: s.setStartDate(newValue.toString()); break;
-                case 10: s.setLineManager(newValue.toString()); break;
-                case 11: s.setAccessLevel(newValue.toString()); break;
+            if(staffPanelListener != null) {
+                staffPanelListener.onTableChange(e, staffTable);
             }
-
-            model.saveStaff();
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         panel.add(createButtonPanel("Staff", staffTable, table), BorderLayout.SOUTH);
-        return panel;
+        tabbedPane.addTab("Staff", panel);
     }
 
-    public void refreshStaffTable(){
+    public void refreshStaffTable(ArrayList<Staff> staff){
         staffTable.setRowCount(0);
-        ArrayList<Staff> staffList = new ArrayList<>(model.getAllStaff());
+        ArrayList<Staff> staffList = new ArrayList<>(staff);
         staffList.sort(Comparator.comparingInt(r -> Integer.parseInt(r.getId().substring(2))));
 
         for (Staff s : staffList) {
@@ -339,8 +278,13 @@ public class HealthcareView extends JFrame {
 
 
     // ================= Appointments =================
-    private JPanel createAppointmentsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    public void createAppointmentsPanel(ArrayList<Appointment> appointments) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Appointments");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         String[] columns = {"appointment_id","patient_id","clinician_id","facility_id","appointment_date","appointment_time","duration_minutes",
                             "appointment_type","status","reason_for_visit","notes","created_date","last_modified"};
@@ -351,54 +295,25 @@ public class HealthcareView extends JFrame {
             }
         };
 
-       refreshAppointmentTable();
+       refreshAppointmentTable(appointments);
 
         JTable table = new JTable(appointmentsTable);
 
         appointmentsTable.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int col = e.getColumn();
-            if (row < 0 || col < 0) return;
-
-            Appointment a = model.getAppointmentById(appointmentsTable.getValueAt(row, 0).toString()); // get original object
-            Object newValue = appointmentsTable.getValueAt(row, col);
-
-            switch (col) {
-                case 1: a.setPatientId(newValue.toString()); break;
-                case 2: a.setClinicianId(newValue.toString()); break;
-                case 3: a.setFacilityId(newValue.toString()); break;
-                case 4: a.setAppointmentDate(newValue.toString()); break;
-                case 5: a.setAppointmentTime(newValue.toString()); break;
-                case 6: break;
-                case 7: a.setAppointmentType(newValue.toString()); break;
-                case 8: a.setStatus(newValue.toString()); break;
-                case 9: a.setReasonForVisit(newValue.toString()); break;
-                case 10: a.setNotes(newValue.toString()); break;
-                case 11: a.setCreatedDate(newValue.toString()); break;
+            if(appointmentsPanelListener != null) {
+                appointmentsPanelListener.onTableChange(e, appointmentsTable);
             }
-
-            if (col == 6) { // assume capacity column index
-                try {
-                    a.setDurationMinutes(Integer.parseInt(newValue.toString()));
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Duration must be a number");
-                    appointmentsTable.setValueAt(0, row, 6);
-                }
-            }
-            a.setLastModified(date.toString());
-            model.saveAppointments();
-            refreshAppointmentTable();
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         panel.add(createButtonPanel("Appointment", appointmentsTable, table), BorderLayout.SOUTH);
-        return panel;
+        tabbedPane.addTab("Appointments", panel);
     }
 
-    public void refreshAppointmentTable(){
+    public void refreshAppointmentTable(ArrayList<Appointment> appointments){
         appointmentsTable.setRowCount(0);
-        ArrayList<Appointment> appointmentList = new ArrayList<>(model.getAllAppointments());
+        ArrayList<Appointment> appointmentList = new ArrayList<>(appointments);
         appointmentList.sort(Comparator.comparingInt(r -> Integer.parseInt(r.getId().substring(1))));
 
         for (Appointment a : appointmentList) {
@@ -421,8 +336,13 @@ public class HealthcareView extends JFrame {
     }
 
     // ================= Prescriptions =================
-    private JPanel createPrescriptionsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    public void createPrescriptionsPanel(ArrayList<Prescription> prescriptions) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Prescriptions");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         String[] columns = {"prescription_id","patient_id","clinician_id","appointment_id","prescription_date","medication_name","dosage","frequency",
                             "duration_days","quantity","instructions","pharmacy_name","status","issue_date","collection_date"};
@@ -433,56 +353,25 @@ public class HealthcareView extends JFrame {
             }
         };
 
-        refreshPrescriptionTable();
+        refreshPrescriptionTable(prescriptions);
 
         JTable table = new JTable(prescriptionsTable);
 
         prescriptionsTable.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int col = e.getColumn();
-            if (row < 0 || col < 0) return;
-
-            Prescription p = model.getPrescriptionById(prescriptionsTable.getValueAt(row, 0).toString()); // get original object
-            Object newValue = prescriptionsTable.getValueAt(row, col);
-
-            switch (col) {
-                case 1: p.setPatientId(newValue.toString()); break;
-                case 2: p.setClinicId(newValue.toString()); break;
-                case 3: p.setAppointmentId(newValue.toString()); break;
-                case 4: p.setPrescriptionDate(newValue.toString()); break;
-                case 5: p.setMedicationName(newValue.toString()); break;
-                case 6: p.setDosage(newValue.toString()); break;
-                case 7: p.setFrequency(newValue.toString()); break;
-                case 8: break;
-                case 9: p.setQuantity(newValue.toString()); break;
-                case 10: p.setInstructions(newValue.toString()); break;
-                case 11: p.setPharmacyName(newValue.toString()); break;
-                case 12: p.setStatus(newValue.toString()); break;
-                case 13: p.setIssueDate(newValue.toString()); break;
-                case 14: p.setCollection(newValue.toString()); break;
+            if(prescriptionsPanelListener != null) {
+                prescriptionsPanelListener.onTableChange(e, prescriptionsTable);
             }
-
-            if (col == 8) { // assume capacity column index
-                try {
-                    p.setDurationDays(Integer.parseInt(newValue.toString()));
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Duration must be a number");
-                    prescriptionsTable.setValueAt(0, row, 8);
-                }
-            }
-
-            model.savePrescriptions();
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         panel.add(createButtonPanel("Prescription", prescriptionsTable, table), BorderLayout.SOUTH);
-        return panel;
+        tabbedPane.addTab("Prescriptions", panel);
     }
 
-    public void refreshPrescriptionTable(){
+    public void refreshPrescriptionTable(ArrayList<Prescription> prescriptions){
         prescriptionsTable.setRowCount(0);
-        ArrayList<Prescription> prescriptionList = new ArrayList<>(model.getAllPrescriptions());
+        ArrayList<Prescription> prescriptionList = new ArrayList<>(prescriptions);
         prescriptionList.sort(Comparator.comparingInt(r -> Integer.parseInt(r.getId().substring(2))));
 
         for (Prescription p : prescriptionList) {
@@ -507,8 +396,13 @@ public class HealthcareView extends JFrame {
     }
 
     // ================= Referrals =================
-    private JPanel createReferralsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    public void createReferralsPanel(ArrayList<Referral> referrals) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Referrals");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         String[] columns = {"referral_id","patient_id","referring_clinician_id","referred_to_clinician_id","referring_facility_id","referred_to_facility_id",
                             "referral_date","urgency_level","referral_reason","clinical_summary","requested_investigations","status","appointment_id","notes",
@@ -520,47 +414,25 @@ public class HealthcareView extends JFrame {
             }
         };
 
-        refreshReferralsTable();
+        refreshReferralsTable(referrals);
 
         JTable table = new JTable(referralsTable);
 
         referralsTable.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int col = e.getColumn();
-            if (row < 0 || col < 0) return;
-
-            Referral r = model.getReferralById(referralsTable.getValueAt(row, 0).toString());
-            Object newValue = referralsTable.getValueAt(row, col);
-
-            switch (col) {
-                case 1: r.setPatientId(newValue.toString()); break;
-                case 2: r.setReferringClinicianId(newValue.toString()); break;
-                case 3: r.setReferredToClinicianId(newValue.toString()); break;
-                case 4: r.setReferringFacilityId(newValue.toString()); break;
-                case 5: r.setReferredToFacilityId(newValue.toString()); break;
-                case 6: r.setReferralDate(newValue.toString()); break;
-                case 7: r.setUrgencyLevel(newValue.toString()); break;
-                case 8: r.setReferralReason(newValue.toString()); break;
-                case 9: r.setClinicianSummary(newValue.toString()); break;
-                case 10: r.setRequestedInvestigations(newValue.toString()); break;
-                case 11: r.setStatus(newValue.toString()); break;
-                case 12: r.setAppointmentId(newValue.toString()); break;
-                case 13: r.setNotes(newValue.toString()); break;
+            if(referralsPanelListener != null) {
+                referralsPanelListener.onTableChange(e, referralsTable);
             }
-            r.setLastUpdated(date.toString());
-            model.saveReferrals();
-            refreshReferralsTable();
         });
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         panel.add(createButtonPanel("Referral", referralsTable, table), BorderLayout.SOUTH);
-        return panel;
+        tabbedPane.addTab("Referrals", panel);
     }
 
-    public void refreshReferralsTable() {
+    public void refreshReferralsTable(ArrayList<Referral> referrals) {
         referralsTable.setRowCount(0);
-        ArrayList<Referral> referralList = new ArrayList<>(model.getAllReferrals());
+        ArrayList<Referral> referralList = new ArrayList<>(referrals);
         referralList.sort(Comparator.comparingInt(r -> Integer.parseInt(r.getId().substring(1))));
 
         for (Referral r : referralList) {
@@ -592,11 +464,18 @@ public class HealthcareView extends JFrame {
         JButton addButton = new JButton("Add " + entityName);
         JButton deleteButton = new JButton("Delete");
 
-        addButton.addActionListener(e ->
-                generateObject(entityName));
+        addButton.addActionListener(e -> {
+           if (createButtonListener != null) {
+               createButtonListener.onCreate(entityName);
+           }
+        });
 
-        deleteButton.addActionListener(e ->
-                deleteRow(entityName, tableModel, table));
+
+        deleteButton.addActionListener(e -> {
+            if(deleteButtonListener != null) {
+                deleteButtonListener.onDelete(entityName, tableModel, table);
+            }
+        });
 
         panel.add(addButton);
         panel.add(deleteButton);
@@ -604,49 +483,40 @@ public class HealthcareView extends JFrame {
         return panel;
     }
 
-    private void deleteRow(String entityName, DefaultTableModel tableModel, JTable table) {
-        switch (entityName) {
-            case "Facility": model.removeFacilityById(tableModel.getValueAt(table.getSelectedRow(), 0).toString()); break;
-            case "Patient": model.removePatientById(tableModel.getValueAt(table.getSelectedRow(), 0).toString()); break;
-            case "Clinician": model.removeClinicianById(tableModel.getValueAt(table.getSelectedRow(), 0).toString()); break;
-            case "Referral": model.removeReferralById(tableModel.getValueAt(table.getSelectedRow(), 0).toString()); break;
-            case "Staff": model.removeStaffByID(tableModel.getValueAt(table.getSelectedRow(), 0).toString()); break;
-            case "Prescription": model.removePrescriptionById(tableModel.getValueAt(table.getSelectedRow(), 0).toString()); break;
-            case "Appointment": model.removeAppointmentById(tableModel.getValueAt(table.getSelectedRow(), 0).toString()); break;
-        }
-        tableModel.removeRow(table.getSelectedRow());
+    // ================= Listener Setup =================
+    public void setFacilitiesPanelListener(TableUpdateListener facilitiesPanelListener) {
+        this.facilitiesPanelListener = facilitiesPanelListener;
     }
 
-    private void generateObject(String entityName) {
-        switch (entityName) {
-            case "Facility":
-                model.addFacility(new Facility(model.generateFacilityId(),"","",",","","","",",","",0,""));
-                refreshFacilitesTable();
-                break;
-            case "Patient":
-                model.addPatient(new Patient(model.generatePatientId(),"","","","","","","",",","","","", date.toString(),""));
-                refreshPatientsTable();
-                break;
-            case "Clinician":
-                model.addClinician(new Clinician(model.generateClinicianId(),"","","","","","","", "","","", date.toString()));
-                refreshClinicianTable();
-                break;
-            case "Referral":
-                model.addReferral(new Referral(model.generateReferralId(),"","","","","", date.toString(),"","","","","New","","", date.toString(), date.toString()));
-                refreshReferralsTable();
-                break;
-            case  "Staff":
-                model.addStaff(new Staff(model.generateStaffId(),"","","","","","","","", date.toString(),"",""));
-                refreshStaffTable();
-                break;
-            case "Prescription":
-                model.addPrescription(new Prescription(model.generatePrescriptionId(),"","","", date.toString(),"","","",0,"","","","Issued", date.toString(),""));
-                refreshPrescriptionTable();
-                break;
-            case "Appointment":
-                model.addAppointment(new Appointment(model.generateAppointmentId(),"","","","","",0,"","Scheduled","","", date.toString(), date.toString()));
-                refreshAppointmentTable();
-                break;
-        }
+    public void setCliniciansPanelListener(TableUpdateListener cliniciansPanelListener) {
+        this.cliniciansPanelListener = cliniciansPanelListener;
+    }
+
+    public void setPatientsPanelListener(TableUpdateListener patientsPanelListener) {
+        this.patientsPanelListener = patientsPanelListener;
+    }
+
+    public void setStaffPanelListener(TableUpdateListener staffPanelListener) {
+        this.staffPanelListener = staffPanelListener;
+    }
+
+    public void setAppointmentsPanelListener(TableUpdateListener appointmentsPanelListener) {
+        this.appointmentsPanelListener = appointmentsPanelListener;
+    }
+
+    public void setPrescriptionsPanelListener(TableUpdateListener prescriptionsPanelListener) {
+        this.prescriptionsPanelListener = prescriptionsPanelListener;
+    }
+
+    public void setReferralsPanelListener(TableUpdateListener referralsPanelListener) {
+        this.referralsPanelListener = referralsPanelListener;
+    }
+
+    public void setCreateButtonListener(CreateButtonListener createButtonListener) {
+        this.createButtonListener = createButtonListener;
+    }
+
+    public void setDeleteButtonListener(DeleteButtonListener deleteButtonListener) {
+        this.deleteButtonListener = deleteButtonListener;
     }
 }
