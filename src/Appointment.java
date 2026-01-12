@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 public class Appointment {
     private String id;
     private String patientId;
@@ -137,8 +139,8 @@ public class Appointment {
     }
 
     public static Appointment fromCSV(String csv) {
-        String[] parts = csv.split(",");
-        return new Appointment(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], Integer.parseInt(parts[6]), parts[7], parts[8], parts[9], parts[10], parts[11], parts[12]);
+        Vector<String> parts =CSVHandler.smartSplit(csv);
+        return new Appointment(parts.get(0), parts.get(1), parts.get(2), parts.get(3), parts.get(4), parts.get(5), Integer.parseInt(parts.get(6)), parts.get(7), parts.get(8), parts.get(9), parts.get(10), parts.get(11), parts.get(12));
     }
 
     @Override

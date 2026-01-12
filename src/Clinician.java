@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 public class Clinician extends Person {
     private String title;
     private String specialty;
@@ -75,8 +77,8 @@ public class Clinician extends Person {
     }
 
     public static Clinician fromCSV(String csv) {
-        String[] parts = csv.split(",");
-        return new Clinician(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7], parts[8], parts[9], parts[10],parts[11]);
+        Vector<String> parts =CSVHandler.smartSplit(csv);
+        return new Clinician(parts.get(0), parts.get(1), parts.get(2), parts.get(3), parts.get(4), parts.get(5), parts.get(6), parts.get(7), parts.get(8), parts.get(9), parts.get(10), parts.get(11));
     }
 
     @Override

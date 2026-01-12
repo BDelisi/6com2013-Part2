@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 public class Prescription {
     private String id;
     private String patientId;
@@ -154,14 +156,8 @@ public class Prescription {
     }
 
     public static Prescription fromCSV(String csv) {
-        String[] parts = csv.split(",");
-        String tempCollection;
-        if (parts.length != 15) {
-            tempCollection = "";
-        } else {
-            tempCollection = parts[14];
-        }
-        return new Prescription(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7], Integer.parseInt(parts[8]), parts[9], parts[10], parts[11], parts[12], parts[13], tempCollection);
+        Vector<String> parts = CSVHandler.smartSplit(csv);
+        return new Prescription(parts.get(0), parts.get(1), parts.get(2), parts.get(3), parts.get(4), parts.get(5), parts.get(6), parts.get(7), Integer.parseInt(parts.get(8)), parts.get(9), parts.get(10), parts.get(11), parts.get(12), parts.get(13), parts.get(14));
     }
 
     @Override

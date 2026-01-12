@@ -99,6 +99,11 @@ public class HealthcareModel {
         return String.format("H%03d", newIdNumber);
     }
 
+    public void removeFacilityById(String id) {
+        facilities.remove(id);
+        saveFacilities();
+    }
+
 
     //=============== Clinician Management ============================
     private void loadClinicians() {
@@ -145,6 +150,11 @@ public class HealthcareModel {
         }
 
         return String.format("C%03d", newIdNumber);
+    }
+
+    public void removeClinicianById(String id) {
+        clinicians.remove(id);
+        saveClinicians();
     }
 
 
@@ -195,6 +205,11 @@ public class HealthcareModel {
         return String.format("P%03d", newIdNumber);
     }
 
+    public void removePatientById(String id) {
+        patients.remove(id);
+        savePatients();
+    }
+
 
     //=============== Staff Management ============================
     private void loadStaff() {
@@ -241,6 +256,11 @@ public class HealthcareModel {
         }
 
         return String.format("ST%03d", newIdNumber);
+    }
+
+    public void removeStaffByID(String id) {
+        staffMap.remove(id);
+        saveStaff();
     }
 
 
@@ -291,6 +311,11 @@ public class HealthcareModel {
         return String.format("A%03d", newIdNumber);
     }
 
+    public void removeAppointmentById(String id) {
+        appointments.remove(id);
+        saveAppointments();
+    }
+
 
     //=============== Referral Management ============================
     private void loadReferrals() {
@@ -325,7 +350,23 @@ public class HealthcareModel {
     }
 
     public String generateReferralId() {
-        return "S" + referrals.size();
+        Set<Integer> usedNumbers = new HashSet<>();
+        for (String id : referrals.keySet()) {
+            int number = Integer.parseInt(id.substring(1));
+            usedNumbers.add(number);
+        }
+
+        int newIdNumber = 1;
+        while (usedNumbers.contains(newIdNumber)) {
+            newIdNumber++;
+        }
+
+        return String.format("R%03d", newIdNumber);
+    }
+
+    public void removeReferralById(String id) {
+        referrals.remove(id);
+        saveReferrals();
     }
 
 
@@ -364,7 +405,7 @@ public class HealthcareModel {
     public String generatePrescriptionId() {
         Set<Integer> usedNumbers = new HashSet<>();
         for (String id : prescriptions.keySet()) {
-            int number = Integer.parseInt(id.substring(1));
+            int number = Integer.parseInt(id.substring(2));
             usedNumbers.add(number);
         }
 
@@ -374,5 +415,10 @@ public class HealthcareModel {
         }
 
         return String.format("RX%03d", newIdNumber);
+    }
+
+    public void removePrescriptionById(String id) {
+        prescriptions.remove(id);
+        savePrescriptions();
     }
 }

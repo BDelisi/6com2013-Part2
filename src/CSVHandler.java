@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class CSVHandler {
 
@@ -68,5 +69,27 @@ public class CSVHandler {
             System.err.println("Error creating file: " + filename);
             e.printStackTrace();
         }
+    }
+
+    public static Vector<String> smartSplit(String line) {
+        String[] tokens = line.split(",", -1);
+        Vector<String> output = new Vector<>();
+        for (int i = 0; i < tokens.length; i++) {
+            if ((tokens[i].length() - tokens[i].replace("\"", "").length()) == 1) {
+                boolean endFound = false;
+                int start = i;
+                while (!endFound) {
+                    i++;
+                    tokens[start] += "," + tokens[i];
+                    if ((tokens[i].length() - tokens[i].replace("\"", "").length()) == 1){
+                        endFound = true;
+                    }
+                }
+                output.add(tokens[start]);
+            } else {
+                output.add(tokens[i]);
+            }
+        }
+        return output;
     }
 }

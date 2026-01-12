@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 public class Patient extends Person {
     private String dateOfBirth;
     private String nhsNumber;
@@ -95,8 +97,8 @@ public class Patient extends Person {
     }
 
     public static Patient fromCSV(String csv) {
-        String[] parts = csv.split(",");
-        return new Patient(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7], parts[8] + "," + parts[9], parts[10], parts[11], parts[12], parts[13], parts[14]);
+        Vector<String> parts =CSVHandler.smartSplit(csv);
+        return new Patient(parts.get(0), parts.get(1), parts.get(2), parts.get(3), parts.get(4), parts.get(5), parts.get(6), parts.get(7), parts.get(8), parts.get(9), parts.get(10), parts.get(11), parts.get(12), parts.get(13));
     }
 
     @Override
