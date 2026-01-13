@@ -3,6 +3,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.time.LocalDate;
@@ -457,6 +459,23 @@ public class HealthcareView extends JFrame {
         }
     }
 
+    private void showGeneratedEmailDialog(String referralId) {
+        JDialog dialog = new JDialog(this, "Generated email", true);
+        dialog.setSize(400, 400);
+        dialog.setLocationRelativeTo(this);
+
+        dialog.add(new JLabel("Generated email:"));
+
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setText(controller.getGeneratedEmail(referralId));
+
+        dialog.add(textArea);
+        dialog.setVisible(true);
+    }
+
     // ================= Shared Buttons =================
     private JPanel createButtonPanel(String entityName, DefaultTableModel tableModel, JTable table) {
         JPanel panel = new JPanel();
@@ -473,12 +492,28 @@ public class HealthcareView extends JFrame {
 
         deleteButton.addActionListener(e -> {
             if(deleteButtonListener != null) {
-                deleteButtonListener.onDelete(entityName, tableModel, table);
+               try {
+                   deleteButtonListener.onDelete(entityName, tableModel, table);
+               } catch (Exception e1) {
+                    showErrorMessage("Please select a valid " + entityName + " to delete");
+               }
             }
         });
 
         panel.add(addButton);
         panel.add(deleteButton);
+
+        if(entityName.equals("Referral")) {
+            JButton emailButton = new JButton("Generate email");
+            emailButton.addActionListener(e -> {
+                try {
+                    showGeneratedEmailDialog(tableModel.getValueAt(table.getSelectedRow(), 0).toString());
+                } catch (Exception e1) {
+                    showErrorMessage("Please select a valid referral");
+                }
+            });
+            panel.add(emailButton);
+        }
 
         return panel;
     }
@@ -518,5 +553,15 @@ public class HealthcareView extends JFrame {
 
     public void setDeleteButtonListener(DeleteButtonListener deleteButtonListener) {
         this.deleteButtonListener = deleteButtonListener;
+    }
+
+    // ========== Utility Methods ==========
+
+    public void showSuccessMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }

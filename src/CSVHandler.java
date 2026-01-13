@@ -5,6 +5,7 @@ import java.util.Vector;
 public class CSVHandler {
 
     public static void writeLines(String filename, ArrayList<String> lines) {
+        if (lines == null || lines.isEmpty()) return;
         BufferedWriter writer = null;
         createFileIfNotExists(filename);
         try {
@@ -81,7 +82,7 @@ public class CSVHandler {
                 while (!endFound) {
                     i++;
                     tokens[start] += "," + tokens[i];
-                    if ((tokens[i].length() - tokens[i].replace("\"", "").length()) == 1){
+                    if ((tokens[i].length() - tokens[i].replace("\"", "").length()) != 0){
                         endFound = true;
                     }
                 }

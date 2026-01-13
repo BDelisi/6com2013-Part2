@@ -7,10 +7,13 @@ import java.awt.event.ActionListener;
 public class HealthcareController {
     private HealthcareModel model;
     private HealthcareView view;
+    private ReferralManager referralManager;
 
     public HealthcareController(HealthcareModel model, HealthcareView view) {
         this.model = model;
         this.view = view;
+
+        this.referralManager = ReferralManager.getInstance(model);
 
         setupView();
         setupListeners();
@@ -305,31 +308,40 @@ public class HealthcareController {
     public void handleCreateObject(String entityName) {
         switch (entityName) {
             case "Facility":
-                model.addFacility(new Facility(model.generateFacilityId(),"","",",","","","",",","",0,""));
+                model.addFacility(new Facility(model.generateFacilityId(),"","","","","","",
+                                                "","",0,""));
                 view.refreshFacilitiesTable(model.getAllFacilities());
                 break;
             case "Patient":
-                model.addPatient(new Patient(model.generatePatientId(),"","","","","","","",",","","","", model.getDate(),""));
+                model.addPatient(new Patient(model.generatePatientId(),"","","","","","","",
+                                            "","","","", model.getDate(),""));
                 view.refreshPatientsTable(model.getAllPatients());
                 break;
             case "Clinician":
-                model.addClinician(new Clinician(model.generateClinicianId(),"","","","","","","", "","","", model.getDate()));
+                model.addClinician(new Clinician(model.generateClinicianId(),"","","","","","","",
+                                                "","","", model.getDate()));
                 view.refreshClinicianTable(model.getAllClinicians());
                 break;
             case "Referral":
-                model.addReferral(new Referral(model.generateReferralId(),"","","","","", model.getDate(),"","","","","New","","", model.getDate(), model.getDate()));
+                referralManager.createReferral("", "", "", "", "", "Normal",
+                                                "", "");
                 view.refreshReferralsTable(model.getAllReferrals());
                 break;
             case  "Staff":
-                model.addStaff(new Staff(model.generateStaffId(),"","","","","","","","", model.getDate(),"",""));
+                model.addStaff(new Staff(model.generateStaffId(),"","","","","","","","",
+                                        model.getDate(),"",""));
                 view.refreshStaffTable(model.getAllStaff());
                 break;
             case "Prescription":
-                model.addPrescription(new Prescription(model.generatePrescriptionId(),"","","", model.getDate(), "","","",0,"","","","Issued", model.getDate(),""));
+                model.addPrescription(new Prescription(model.generatePrescriptionId(),"","","", model.getDate(), "",
+                                                    "","",0,"","","","Issued", model.getDate(),
+                                                    ""));
                 view.refreshPrescriptionTable(model.getAllPrescriptions());
                 break;
             case "Appointment":
-                model.addAppointment(new Appointment(model.generateAppointmentId(),"","","","","",0,"","Scheduled","","", model.getDate(), model.getDate()));
+                model.addAppointment(new Appointment(model.generateAppointmentId(),"","","","","",
+                                                    0,"","Scheduled","","", model.getDate(),
+                                                    model.getDate()));
                 view.refreshAppointmentTable(model.getAllAppointments());
                 break;
         }
@@ -346,6 +358,10 @@ public class HealthcareController {
             case "Appointment": model.removeAppointmentById(tableModel.getValueAt(table.getSelectedRow(), 0).toString()); break;
         }
         tableModel.removeRow(table.getSelectedRow());
+    }
+
+    public String getGeneratedEmail(String referralID) {
+        return referralManager.generateReferralEmail(model.getReferralById(referralID));
     }
 }
 
