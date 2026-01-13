@@ -88,6 +88,10 @@ public class HealthcareController {
         Facility f = model.getFacilityById(tableModel.getValueAt(row, 0).toString());
         Object newValue = tableModel.getValueAt(row, col);
 
+        if(newValue.toString().contains(",") && (!newValue.toString().startsWith("\"") || !newValue.toString().endsWith("\""))) {
+            throw new RuntimeException("Invalid entry");
+        }
+
         switch (col) {
             case 1:
                 f.setFacilityName(newValue.toString());
@@ -140,6 +144,10 @@ public class HealthcareController {
         Clinician c = model.getClinicianById(tableModel.getValueAt(row, 0).toString());
         Object newValue = tableModel.getValueAt(row, col);
 
+        if(newValue.toString().contains(",") && (!newValue.toString().startsWith("\"") || !newValue.toString().endsWith("\""))) {
+            throw new RuntimeException("Invalid entry");
+        }
+
         switch (col) {
             case 1: c.setFirstName(newValue.toString()); break;
             case 2: c.setLastName(newValue.toString()); break;
@@ -164,6 +172,10 @@ public class HealthcareController {
 
         Patient p = model.getPatientById(tableModel.getValueAt(row, 0).toString());
         Object newValue = tableModel.getValueAt(row, col);
+
+        if(newValue.toString().contains(",") && (!newValue.toString().startsWith("\"") || !newValue.toString().endsWith("\""))) {
+            throw new RuntimeException("Invalid entry");
+        }
 
         switch (col) {
             case 1: p.setFirstName(newValue.toString()); break;
@@ -191,6 +203,10 @@ public class HealthcareController {
         Staff s = model.getStaffById(tableModel.getValueAt(row, 0).toString()); // get original object
         Object newValue = tableModel.getValueAt(row, col);
 
+        if(newValue.toString().contains(",") && (!newValue.toString().startsWith("\"") || !newValue.toString().endsWith("\""))) {
+            throw new RuntimeException("Invalid entry");
+        }
+
         switch (col) {
             case 1: s.setFirstName(newValue.toString()); break;
             case 2: s.setLastName(newValue.toString()); break;
@@ -214,6 +230,10 @@ public class HealthcareController {
 
         Appointment a = model.getAppointmentById(tableModel.getValueAt(row, 0).toString()); // get original object
         Object newValue = tableModel.getValueAt(row, col);
+
+        if(newValue.toString().contains(",") && (!newValue.toString().startsWith("\"") || !newValue.toString().endsWith("\""))) {
+            throw new RuntimeException("Invalid entry");
+        }
 
         switch (col) {
             case 1: a.setPatientId(newValue.toString()); break;
@@ -248,6 +268,10 @@ public class HealthcareController {
 
         Prescription p = model.getPrescriptionById(tableModel.getValueAt(row, 0).toString()); // get original object
         Object newValue = tableModel.getValueAt(row, col);
+
+        if(newValue.toString().contains(",") && (!newValue.toString().startsWith("\"") || !newValue.toString().endsWith("\""))) {
+            throw new RuntimeException("Invalid entry");
+        }
 
         switch (col) {
             case 1: p.setPatientId(newValue.toString()); break;
@@ -284,6 +308,10 @@ public class HealthcareController {
 
         Referral r = model.getReferralById(tableModel.getValueAt(row, 0).toString());
         Object newValue = tableModel.getValueAt(row, col);
+
+        if(newValue.toString().contains(",") && (!newValue.toString().startsWith("\"") || !newValue.toString().endsWith("\""))) {
+            throw new RuntimeException("Invalid entry");
+        }
 
         switch (col) {
             case 1: r.setPatientId(newValue.toString()); break;

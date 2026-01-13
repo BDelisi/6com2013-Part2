@@ -72,10 +72,13 @@ public class HealthcareView extends JFrame {
 
         facilitiesTable.addTableModelListener( e ->{
             if (facilitiesPanelListener != null) {
-                facilitiesPanelListener.onTableChange(e, facilitiesTable);
+                try {
+                    facilitiesPanelListener.onTableChange(e, facilitiesTable);
+                } catch (Exception e1) {
+                    showErrorMessage("Invalid entry. Entries with commas must be surrounded by quotes");
+                }
             }
         });
-
 
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
@@ -129,7 +132,11 @@ public class HealthcareView extends JFrame {
 
         cliniciansTable.addTableModelListener(e -> {
             if(cliniciansPanelListener != null) {
-                cliniciansPanelListener.onTableChange(e, cliniciansTable);
+                try {
+                    cliniciansPanelListener.onTableChange(e, cliniciansTable);
+                } catch (Exception e1) {
+                    showErrorMessage("Invalid entry. Entries with commas must be surrounded by quotes");
+                }
             }
         });
 
@@ -186,7 +193,11 @@ public class HealthcareView extends JFrame {
 
         patientsTable.addTableModelListener(e -> {
             if(patientsPanelListener != null) {
+                try {
                 patientsPanelListener.onTableChange(e, patientsTable);
+                } catch (Exception e1) {
+                    showErrorMessage("Invalid entry. Entries with commas must be surrounded by quotes");
+                }
             }
         });
 
@@ -245,7 +256,11 @@ public class HealthcareView extends JFrame {
 
         staffTable.addTableModelListener(e -> {
             if(staffPanelListener != null) {
+                try {
                 staffPanelListener.onTableChange(e, staffTable);
+                } catch (Exception e1) {
+                    showErrorMessage("Invalid entry. Entries with commas must be surrounded by quotes");
+                }
             }
         });
 
@@ -303,7 +318,11 @@ public class HealthcareView extends JFrame {
 
         appointmentsTable.addTableModelListener(e -> {
             if(appointmentsPanelListener != null) {
+                try {
                 appointmentsPanelListener.onTableChange(e, appointmentsTable);
+                } catch (Exception e1) {
+                    showErrorMessage("Invalid entry. Entries with commas must be surrounded by quotes");
+                }
             }
         });
 
@@ -361,7 +380,11 @@ public class HealthcareView extends JFrame {
 
         prescriptionsTable.addTableModelListener(e -> {
             if(prescriptionsPanelListener != null) {
+                try {
                 prescriptionsPanelListener.onTableChange(e, prescriptionsTable);
+                } catch (Exception e1) {
+                    showErrorMessage("Invalid entry. Entries with commas must be surrounded by quotes");
+                }
             }
         });
 
@@ -422,7 +445,11 @@ public class HealthcareView extends JFrame {
 
         referralsTable.addTableModelListener(e -> {
             if(referralsPanelListener != null) {
+                try {
                 referralsPanelListener.onTableChange(e, referralsTable);
+                } catch (Exception e1) {
+                    showErrorMessage("Invalid entry. Entries with commas must be surrounded by quotes");
+                }
             }
         });
 
